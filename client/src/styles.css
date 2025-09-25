@@ -1,3 +1,23 @@
+/* Stylish black font for section headings */
+.section-title {
+  font-family: 'Montserrat', 'Lobster', 'Pacifico', Arial, sans-serif;
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: #111;
+  letter-spacing: 1.5px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+/* Stylish font for Clothing with attitude */
+.attitude-title {
+  font-family: 'Pacifico', 'Lobster', cursive, sans-serif;
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 12px #000;
+}
 .occasion-row {
   margin: 2rem 0 1rem 0;
   text-align: center;
@@ -30,16 +50,17 @@
 }
 .trending-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.2rem;
-  justify-items: start;
-  align-items: start;
+  justify-items: stretch;
+  align-items: stretch;
   margin-top: 1rem;
-  width: 100vw;
-  margin-left: -50vw;
+  width: min(100vw, 1200px);
+  margin-left: 0;
   left: 50%;
+  transform: translateX(-50%);
   position: relative;
-  padding-left: 2vw;
+  padding: 0 2vw;
 }
 .product-card.small {
   width: 180px;
@@ -410,4 +431,68 @@ h1, h2 {
   font-weight: 700;
   text-decoration: none;
   box-shadow: 0 2px 10px #0006;
+}
+
+/* Trend tiles (image-only cards) */
+.trend-tile {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #eaeaea;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.trend-tile::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0; top: 50%;
+  background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0));
+  pointer-events: none;
+}
+.trend-tile:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+}
+
+/* Modern product grid styles */
+.products .product-card {
+  border: 1px solid #eaeaea;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  backdrop-filter: saturate(110%);
+}
+.products .product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+  border-color: #ddd;
+}
+/* Image zoom on hover */
+.products .product-card img {
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+.products .product-card:hover img {
+  transform: scale(1.06);
+}
+/* Star rating polish */
+.products .product-card button[aria-label^="Rate"] span {
+  font-size: 1.25rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.products .product-card button[aria-label^="Rate"]:hover span {
+  transform: translateY(-1px);
+  color: #ffb74d;
+}
+/* Reveal Add to Cart on hover */
+.products .product-card > div > button {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  opacity: 0.92;
+  transform: translateY(4px);
+}
+.products .product-card:hover > div > button {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
 }

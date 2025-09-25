@@ -1,0 +1,17 @@
+{
+  "name": "clothing-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.8.7",
+    "react-router-dom": "^7.9.1"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
