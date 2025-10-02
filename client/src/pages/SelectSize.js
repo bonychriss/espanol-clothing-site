@@ -68,7 +68,8 @@ export default function SelectSize() {
         try {
           // A BestPick and a Product might share a name but not an ID.
           // Let's find the product by name, which is more reliable for this sync if the ID is not a direct match.
-          const res = await fetch(`/api/products`);
+          const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
+          const res = await fetch(`${API_BASE}/api/products`);
           if (res.ok) {
             const data = await res.json();
             const matchingProduct = Array.isArray(data) ? data.find(p => p.name === product.name) : null;
