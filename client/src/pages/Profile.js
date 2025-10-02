@@ -54,11 +54,12 @@ function Profile() {
   // Implement upload logic
   const handlePhotoUpload = async () => {
     if (!profilePhoto) return;
+    const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
     const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append('photo', profilePhoto);
     try {
-      const res = await fetch('/api/auth/upload-photo', {
+      const res = await fetch(`${API_BASE}/api/auth/upload-photo`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -80,12 +81,13 @@ function Profile() {
   };
 
   useEffect(() => {
+    const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
     const token = localStorage.getItem('token');
     Promise.all([
-      fetch('/api/auth/me', {
+      fetch(`${API_BASE}/api/auth/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json()),
-      fetch('/api/orders/my', {
+      fetch(`${API_BASE}/api/orders/my`, {
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json())
     ])
@@ -104,8 +106,9 @@ function Profile() {
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     setPasswordMsg('');
+    const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
     const token = localStorage.getItem('token');
-    const res = await fetch('/api/auth/change-password', {
+    const res = await fetch(`${API_BASE}/api/auth/change-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,13 +150,27 @@ function Profile() {
       .profile-columns {
         flex-direction: column !important;
       }
+      .profile-card {
+        margin: 1rem auto !important;
+        padding: 1.5rem !important;
+      }
+      .profile-container {
+        padding: 0.5rem !important;
+      }
+    }
+    @media (max-width: 768px) {
+      .profile-card {
+        margin: 0.5rem auto !important;
+        padding: 1rem !important;
+        border-radius: 12px !important;
+      }
     }
   `;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%)', fontFamily: 'Inter, Arial, sans-serif', padding: '0 0.5rem' }}>
+    <div className="profile-container" style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%)', fontFamily: 'Inter, Arial, sans-serif', padding: '0 0.5rem' }}>
       <style>{mediaQuery}</style>
-      <div style={{ maxWidth: 1100, margin: '3rem auto', background: '#fff', borderRadius: 20, boxShadow: '0 6px 32px rgba(0,0,0,0.08)', padding: '2.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <div className="profile-card" style={{ maxWidth: 1100, margin: '3rem auto', background: '#fff', borderRadius: 20, boxShadow: '0 6px 32px rgba(0,0,0,0.08)', padding: '2.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '-1.5rem' }}>
           <button onClick={handleLogout} style={{ background: '#FFD700', color: '#222', fontWeight: 700, border: 'none', borderRadius: 8, padding: '0.7rem 1.5rem', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>Logout</button>
         </div>
@@ -286,6 +303,46 @@ function Profile() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Responsive CSS */}
+      <style>{`
+        @media (max-width: 768px) {
+          .profile-container {
+            padding: 1rem !important;
+            margin-top: 1rem !important;
+          }
+          .profile-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem !important;
+          }
+          .profile-card {
+            padding: 1.5rem !important;
+          }
+          .profile-form {
+            grid-template-columns: 1fr !important;
+          }
+          .orders-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .profile-container {
+            padding: 0.5rem !important;
+            margin-top: 0.5rem !important;
+          }
+          .orders-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .profile-card {
+            padding: 1rem !important;
+          }
+          .profile-avatar {
+            width: 80px !important;
+            height: 80px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

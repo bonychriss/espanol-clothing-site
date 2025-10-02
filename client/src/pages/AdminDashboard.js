@@ -11,8 +11,9 @@ export default function AdminDashboard() {
       setLoading(true);
       setError('');
       try {
+        const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
         const token = localStorage.getItem('token');
-        const res = await fetch('/api/orders', {
+        const res = await fetch(`${API_BASE}/api/orders`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();

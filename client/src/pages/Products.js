@@ -158,9 +158,10 @@ function Products() {
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
+        const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
         const [productsRes, bestPicksRes] = await Promise.all([
-          fetch('/api/products'),
-          fetch('/api/best-picks')
+          fetch(`${API_BASE}/api/products`),
+          fetch(`${API_BASE}/api/best-picks`)
         ]);
         const productsData = productsRes.ok ? await productsRes.json() : [];
         const bestPicksData = bestPicksRes.ok ? await bestPicksRes.json() : [];
@@ -453,7 +454,7 @@ function Products() {
                     {/* Remove SOLD OUT badge for Best Picks */}
                     {/* Remove SOLD OUT badge for Sabor Best Picks */}
                     {!product.inStock && !product.isBestSeller && !product.isOverallPick && !product.isBestPick && product.category !== 'Sabor Best Picks' && (
-                      <div style={{
+                      <div className="sold-out-badge" style={{
                         position: 'absolute',
                         top: '15px',
                         right: '-30px',
@@ -527,7 +528,7 @@ function Products() {
         <CartSidebar cart={cart} onClose={handleCloseCart} onRemove={handleRemoveFromCart} />
       )}
 
-      {/* Simple responsive tweak */}
+      {/* Enhanced responsive styles for better mobile visibility */}
       <style>{`
         .products.products-page {
           padding: 0 2rem 2rem 2rem !important;
@@ -535,36 +536,184 @@ function Products() {
         .mobile-filter-toggle {
           display: none;
         }
+        
         /* Tablet and smaller desktop */
         @media (max-width: 980px) {
           .products-layout-responsive {
             grid-template-columns: 1fr !important;
           }
           .products-sidebar {
-            display: none; /* Hide sidebar on mobile */
+            display: none;
             position: static;
             margin-bottom: 1.5rem;
           }
           .products-sidebar.mobile-visible {
-            display: block; /* Show when toggled */
+            display: block;
           }
           .mobile-filter-toggle {
-            display: block; /* Show the toggle button */
+            display: block;
             max-width: 600px;
             margin: 0 auto 1rem auto;
           }
           .products-grid-responsive {
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+            gap: 1rem !important;
           }
         }
-        /* Mobile phones */
-        @media (max-width: 600px) {
+        
+        /* Mobile tablets (768px and below) */
+        @media (max-width: 768px) {
           .products.products-page {
             padding: 0 1rem 2rem 1rem !important;
           }
           .products-grid-responsive {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
-            gap: 1rem !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem !important;
+          }
+          .product-card {
+            min-height: 300px !important;
+            padding: 0.75rem !important;
+          }
+          .product-card > div:first-child {
+            height: 160px !important;
+          }
+        }
+        
+        /* Mobile phones (600px and below) */
+        @media (max-width: 600px) {
+          .products.products-page {
+            padding: 0 0.75rem 1.5rem 0.75rem !important;
+          }
+          .products-grid-responsive {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.5rem !important;
+          }
+          .product-card {
+            min-height: 280px !important;
+            padding: 0.6rem !important;
+            border-radius: 0.75rem !important;
+          }
+          .product-card > div:first-child {
+            height: 140px !important;
+            margin-bottom: 0.5rem !important;
+          }
+          .product-card > div:nth-child(3) {
+            font-size: 0.85rem !important;
+            margin-bottom: 4px !important;
+            line-height: 1.2 !important;
+          }
+          .product-card > div:nth-child(4) {
+            font-size: 0.8rem !important;
+            margin-bottom: 6px !important;
+            line-height: 1.3 !important;
+          }
+          .product-card button {
+            padding: 0.4rem 0.8rem !important;
+            font-size: 0.85rem !important;
+          }
+          
+          /* Reduce SOLD OUT badge size for mobile */
+          .sold-out-badge {
+            top: 6px !important;
+            right: -12px !important;
+            padding: 1px 12px !important;
+            font-size: 7px !important;
+            font-weight: 600 !important;
+          }
+        }
+        
+        /* Small mobile phones (480px and below) */
+        @media (max-width: 480px) {
+          .products.products-page {
+            padding: 0 0.5rem 1rem 0.5rem !important;
+          }
+          .products-grid-responsive {
+            gap: 0.4rem !important;
+          }
+          .product-card {
+            min-height: 260px !important;
+            padding: 0.5rem !important;
+          }
+          .product-card > div:first-child {
+            height: 120px !important;
+            margin-bottom: 0.4rem !important;
+          }
+          .product-card > div:nth-child(3) {
+            font-size: 0.8rem !important;
+            margin-bottom: 3px !important;
+          }
+          .product-card > div:nth-child(4) {
+            font-size: 0.75rem !important;
+            margin-bottom: 4px !important;
+          }
+          .product-card button {
+            padding: 0.35rem 0.6rem !important;
+            font-size: 0.8rem !important;
+          }
+          
+          /* Ultra-small SOLD OUT badge for small phones */
+          .sold-out-badge {
+            top: 5px !important;
+            right: -10px !important;
+            padding: 1px 10px !important;
+            font-size: 6px !important;
+            font-weight: 600 !important;
+          }
+          
+          /* Adjust currency selector for mobile */
+          .products-page > div:nth-child(3) {
+            padding: 0.75rem 0 !important;
+          }
+          .products-page > div:nth-child(3) > div {
+            padding: 0 0.5rem !important;
+            flex-direction: column !important;
+            gap: 8px !important;
+          }
+          /* Adjust top bar for mobile */
+          .products-page > div:nth-child(5) {
+            flex-direction: column !important;
+            gap: 0.5rem !important;
+            align-items: flex-start !important;
+          }
+          .products-page > div:nth-child(5) > label {
+            width: 100% !important;
+            justify-content: space-between !important;
+          }
+        }
+        
+        /* Extra small devices (360px and below) */
+        @media (max-width: 360px) {
+          .products.products-page {
+            padding: 0 0.25rem 1rem 0.25rem !important;
+          }
+          .products-grid-responsive {
+            gap: 0.3rem !important;
+          }
+          .product-card {
+            min-height: 240px !important;
+            padding: 0.4rem !important;
+          }
+          .product-card > div:first-child {
+            height: 100px !important;
+          }
+          .product-card > div:nth-child(3) {
+            font-size: 0.75rem !important;
+          }
+          .product-card > div:nth-child(4) {
+            font-size: 0.7rem !important;
+          }
+          .product-card button {
+            padding: 0.3rem 0.5rem !important;
+            font-size: 0.75rem !important;
+          }
+          
+          /* Minimal SOLD OUT badge for extra small devices */
+          .sold-out-badge {
+            top: 4px !important;
+            right: -8px !important;
+            padding: 1px 8px !important;
+            font-size: 5px !important;
+            font-weight: 600 !important;
           }
         }
       `}</style>

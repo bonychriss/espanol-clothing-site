@@ -10,6 +10,31 @@ function Register() {
   const [phone, setPhone] = useState('');
   const [country, setCountry] = useState('');
 
+  // Mobile responsive styles
+  const mediaQuery = `
+    @media (max-width: 768px) {
+      .register-form {
+        max-width: 90% !important;
+        min-width: 280px !important;
+        padding: 1.5rem 1rem !important;
+        margin: 1rem !important;
+      }
+      .register-title {
+        font-size: 1.8rem !important;
+      }
+    }
+    @media (max-width: 480px) {
+      .register-form {
+        max-width: 95% !important;
+        padding: 1rem !important;
+        margin: 0.5rem !important;
+      }
+      .register-title {
+        font-size: 1.6rem !important;
+      }
+    }
+  `;
+
   // Update phone prefix when country changes
   React.useEffect(() => {
     const countryCodes = {
@@ -38,7 +63,8 @@ function Register() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/auth/register', {
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, phone, country })
@@ -74,7 +100,8 @@ function Register() {
         position: 'relative',
       }}
     >
-      <div style={{
+      <style>{mediaQuery}</style>
+      <div className="register-form" style={{
         background: 'rgba(255,255,255,0.10)', // more transparent
         borderRadius: 16,
         boxShadow: '0 4px 32px rgba(0,0,0,0.10)',
@@ -86,7 +113,7 @@ function Register() {
         WebkitBackdropFilter: 'blur(18px)',
         border: '1.5px solid rgba(255,255,255,0.25)',
       }}>
-        <h1 style={{ color: '#222', fontWeight: 800, fontSize: '2.2rem', marginBottom: '1.5rem', textAlign: 'center' }}>Register</h1>
+        <h1 className="register-title" style={{ color: '#222', fontWeight: 800, fontSize: '2.2rem', marginBottom: '1.5rem', textAlign: 'center' }}>Register</h1>
         {loading && <p style={{ textAlign: 'center', color: '#888' }}>Registering...</p>}
         {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
         {success ? (

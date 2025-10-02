@@ -14,6 +14,36 @@ export default function Checkout() {
   const [quotaError, setQuotaError] = React.useState(false);
   const [paymentMethod, setPaymentMethod] = React.useState('Cash on Delivery');
 
+  // Mobile responsive styles
+  const mediaQuery = `
+    @media (max-width: 768px) {
+      .checkout-container {
+        margin: 1rem auto !important;
+        padding: 1.5rem !important;
+        border-radius: 12px !important;
+      }
+      .checkout-item {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.5rem !important;
+      }
+      .checkout-item img {
+        width: 40px !important;
+        height: 40px !important;
+      }
+      .payment-buttons {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+      }
+    }
+    @media (max-width: 480px) {
+      .checkout-container {
+        margin: 0.5rem auto !important;
+        padding: 1rem !important;
+      }
+    }
+  `;
+
   React.useEffect(() => {
     const items = JSON.parse(localStorage.getItem('cart') || '[]');
     setCart(items);
@@ -82,11 +112,12 @@ export default function Checkout() {
   const handlePlaceOrder = async (orderData) => {
     try {
       console.log('Sending order data:', orderData);
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('You must be logged in to place an order.');
       }
-      const response = await fetch('/api/orders', {
+      const response = await fetch(`${API_BASE}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -155,34 +186,36 @@ export default function Checkout() {
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: '2rem auto', background: '#fff', borderRadius: 16, boxShadow: '0 8px 32px rgba(0,0,0,0.08)', padding: '2rem' }}>
-      {quotaError && (
-        <div style={{ color: 'red', fontWeight: 700, marginBottom: 16, textAlign: 'center' }}>
-          {quotaError}
+    <div>
+      <style>{mediaQuery}</style>
+      <div className="checkout-container" style={{ maxWidth: 600, margin: '2rem auto', background: '#fff', borderRadius: 16, boxShadow: '0 8px 32px rgba(0,0,0,0.08)', padding: '2rem' }}>
+        {quotaError && (
+          <div style={{ color: 'red', fontWeight: 700, marginBottom: 16, textAlign: 'center' }}>
+            {quotaError}
+          </div>
+        )}
+        {orderError && (
+          <div style={{ background: '#fee', color: '#c33', padding: '1rem', borderRadius: '8px', margin: '1rem 0', border: '1px solid #fcc', textAlign: 'center' }}>
+            <strong>Order Error:</strong> {orderError}
+          </div>
+        )}
+        <h2 style={{ color: '#FFD700', fontWeight: 800, fontSize: '1.5rem', marginBottom: 18, textAlign: 'center' }}>Checkout</h2>
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: 8 }}>Order Summary</div>
+          <ul style={{ listStyle: 'none', padding: 0, marginBottom: 12 }}>
+            {cart.map((item, idx) => (
+              <li key={idx} className="checkout-item" style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
+                <img src={item.image} alt={item.name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8 }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: '1rem', color: '#222' }}>{item.name}</div>
+                  <div style={{ color: '#555', fontSize: '0.95rem' }}>Size: {item.size}</div>
+                  <div style={{ color: '#FFD700', fontWeight: 700 }}>{convertPrice(item.price)}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#232F3E', textAlign: 'right' }}>Total: {convertPrice(total)}</div>
         </div>
-      )}
-      {orderError && (
-        <div style={{ background: '#fee', color: '#c33', padding: '1rem', borderRadius: '8px', margin: '1rem 0', border: '1px solid #fcc', textAlign: 'center' }}>
-          <strong>Order Error:</strong> {orderError}
-        </div>
-      )}
-      <h2 style={{ color: '#FFD700', fontWeight: 800, fontSize: '1.5rem', marginBottom: 18, textAlign: 'center' }}>Checkout</h2>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: 8 }}>Order Summary</div>
-        <ul style={{ listStyle: 'none', padding: 0, marginBottom: 12 }}>
-          {cart.map((item, idx) => (
-            <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
-              <img src={item.image} alt={item.name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8 }} />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: '1rem', color: '#222' }}>{item.name}</div>
-                <div style={{ color: '#555', fontSize: '0.95rem' }}>Size: {item.size}</div>
-                <div style={{ color: '#FFD700', fontWeight: 700 }}>{convertPrice(item.price)}</div>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#232F3E', textAlign: 'right' }}>Total: {convertPrice(total)}</div>
-      </div>
       <form onSubmit={handleSubmit} style={{ marginTop: 24 }}>
         <div style={{ marginBottom: 16 }}>
           <label style={{ fontWeight: 700, color: '#222', marginBottom: 6, display: 'block' }}>Delivery Address</label>
@@ -208,7 +241,7 @@ export default function Checkout() {
         </div>
         <div style={{ marginBottom: 16 }}>
           <label style={{ fontWeight: 700, color: '#222', marginBottom: 6, display: 'block' }}>Payment Method</label>
-          <div style={{ display: 'flex', gap: 16, marginBottom: 6 }}>
+          <div className="payment-buttons" style={{ display: 'flex', gap: 16, marginBottom: 6 }}>
             <button
               type="button"
               onClick={() => setPaymentMethod('Cash on Delivery')}
@@ -233,6 +266,7 @@ export default function Checkout() {
           style={{ background: '#FFD700', color: '#222', border: 'none', borderRadius: 8, padding: '0.9rem 1.7rem', fontWeight: 700, width: '100%', fontSize: '1.1rem', cursor: 'pointer', marginTop: 10 }}
         >Place Order</button>
       </form>
+      </div>
     </div>
   );
 }

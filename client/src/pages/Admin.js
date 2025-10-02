@@ -96,10 +96,11 @@ function AddProductForm({ onProductAdded, styles }) {
       formData.append('category', form.category);
       formData.append('description', form.description);
       if (form.image) formData.append('image', form.image);
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
       const token = localStorage.getItem('token');
       const headers = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
-      const res = await fetch('/api/products', {
+      const res = await fetch(`${API_BASE}/api/products`, {
         method: 'POST',
         headers,
         body: formData,
@@ -236,12 +237,13 @@ function Admin() {
   const handleBulkDeleteOrders = async () => {
     if (!window.confirm('Are you sure you want to delete all selected orders? This cannot be undone.')) return;
     try {
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
       const token = localStorage.getItem('token');
       const headers = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
       // Send all deletes in parallel
       const results = await Promise.all(selectedOrderIds.map(id =>
-        fetch(`/api/orders/${id}`, { method: 'DELETE', headers })
+        fetch(`${API_BASE}/api/orders/${id}`, { method: 'DELETE', headers })
       ));
       // Check for failures
       const failed = results.filter(res => !res.ok);
@@ -307,11 +309,12 @@ function Admin() {
       if (editForm.image && typeof editForm.image !== 'string') {
         formData.append('image', editForm.image);
       }
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
       const token = localStorage.getItem('token');
       const headers = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const res = await fetch(`/api/products/${editProduct._id}`, {
+      const res = await fetch(`${API_BASE}/api/products/${editProduct._id}`, {
         method: 'PUT',
         headers,
         body: formData,
@@ -350,10 +353,11 @@ function Admin() {
       formData.append('category', bestPickForm.category);
       formData.append('description', bestPickForm.description);
       if (bestPickForm.image) formData.append('image', bestPickForm.image);
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
       const token = localStorage.getItem('token');
       const headers = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
-      const res = await fetch('/api/best-picks', {
+      const res = await fetch(`${API_BASE}/api/best-picks`, {
         method: 'POST',
         headers,
         body: formData,
@@ -375,10 +379,11 @@ function Admin() {
     if (!window.confirm('Delete this best pick?')) return;
     setBestPickError('');
     try {
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
       const token = localStorage.getItem('token');
       const headers = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
-      const res = await fetch(`/api/best-picks/${id}`, {
+      const res = await fetch(`${API_BASE}/api/best-picks/${id}`, {
         method: 'DELETE',
         headers,
       });
@@ -393,10 +398,11 @@ function Admin() {
   const handleOrderStatusUpdate = async (orderId, status) => {
     setOrderError(null);
     try {
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
       const token = localStorage.getItem('token');
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
-      const res = await fetch(`/api/orders/${orderId}`, {
+      const res = await fetch(`${API_BASE}/api/orders/${orderId}`, {
         method: 'PATCH',
         headers,
         body: JSON.stringify({ status }),
@@ -412,8 +418,9 @@ function Admin() {
   const handleToggleStock = async (productId, currentStockStatus) => {
     const newStockStatus = !currentStockStatus;
     try {
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
       const token = localStorage.getItem('token');
-      const res = await fetch(`/api/products/${productId}/stock`, {
+      const res = await fetch(`${API_BASE}/api/products/${productId}/stock`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -433,12 +440,13 @@ function Admin() {
   const fetchAdminData = async () => {
     setOrderLoading(true);
     try {
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
       const token = localStorage.getItem('token');
       const headers = { 'Authorization': `Bearer ${token}` };
       const [productsRes, bestPicksRes, ordersRes] = await Promise.all([
-        fetch('/api/products', { headers }),
-        fetch('/api/best-picks', { headers }),
-        fetch('/api/orders', { headers }),
+        fetch(`${API_BASE}/api/products`, { headers }),
+        fetch(`${API_BASE}/api/best-picks`, { headers }),
+        fetch(`${API_BASE}/api/orders`, { headers }),
       ]);
       const productsData = await productsRes.json();
       const bestPicksData = await bestPicksRes.json();
@@ -531,7 +539,7 @@ function Admin() {
             <Route path="dashboard" element={
               <div style={styles.section}>
                 <h2 style={styles.sectionHeader}>Dashboard Overview</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+                <div className="products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
                   <div style={{...styles.card, textAlign: 'center', padding: '1.5rem'}}>
                     <h3 style={{margin: 0, color: '#FFD700', fontSize: '1.1rem'}}>Total Products</h3>
                     <p style={{fontSize: '2.5rem', fontWeight: 800, margin: '0.5rem 0 0'}}>{products.length}</p>
@@ -604,8 +612,9 @@ function Admin() {
                         <button style={{ ...styles.button, padding: '0.4em 0.8em', fontSize: '0.9rem' }} onClick={() => handleProductEdit(product)}>Edit</button>
                         <button style={{ ...styles.button, background: '#c00', color: '#fff', padding: '0.4em 0.8em', fontSize: '0.9rem' }} onClick={async () => {
                           if (!window.confirm('Delete this product?')) return;
+                          const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
                           const token = localStorage.getItem('token');
-                          const res = await fetch(`/api/products/${product._id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                          const res = await fetch(`${API_BASE}/api/products/${product._id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
                           if (res.ok) {
                             setProducts(prev => prev.filter(p => p._id !== product._id));
                             showPopup('Product deleted successfully.');
@@ -659,7 +668,7 @@ function Admin() {
             <Route path="bestpicks" element={
               <div style={styles.section}>
                 <h2 style={styles.sectionHeader}>Sabor Best Picks Management</h2>
-                <form onSubmit={handleBestPickAdd} style={{ marginBottom: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }} encType="multipart/form-data">
+                <form onSubmit={handleBestPickAdd} className="admin-form" style={{ marginBottom: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }} encType="multipart/form-data">
                   <input name="name" value={bestPickForm.name} onChange={handleBestPickChange} placeholder="Product Name" style={styles.formInput} required />
                   <input name="price" value={bestPickForm.price} onChange={handleBestPickChange} placeholder="Price" type="number" step="0.01" style={styles.formInput} required />
                   <input name="description" value={bestPickForm.description} onChange={handleBestPickChange} placeholder="Description" style={{...styles.formInput, gridColumn: '1 / -1'}} />
@@ -681,7 +690,7 @@ function Admin() {
                   <button type="submit" style={{...styles.button, gridColumn: '1 / -1'}} disabled={bestPickLoading}>Add Best Pick</button>
                 </form>
                 {bestPickError && <div style={{ color: 'red', marginBottom: 12 }}>{bestPickError}</div>}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                <div className="best-picks-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                   {bestPicks.map(pick => (
                     <div key={pick._id} style={{ ...styles.card, textAlign: 'center' }}>
                       <img src={pick.image} alt={pick.name} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 8, marginBottom: 8 }} />
@@ -751,10 +760,11 @@ function Admin() {
                               onClick={async () => {
                                 if (!window.confirm('Are you sure you want to delete this order? This cannot be undone.')) return;
                                 try {
+                                  const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
                                   const token = localStorage.getItem('token');
                                   const headers = {};
                                   if (token) headers['Authorization'] = `Bearer ${token}`;
-                                  const res = await fetch(`/api/orders/${order._id}`, {
+                                  const res = await fetch(`${API_BASE}/api/orders/${order._id}`, {
                                     method: 'DELETE',
                                     headers,
                                   });
@@ -910,6 +920,188 @@ function Admin() {
         @media (min-width: 769px) {
           .hamburger {
             display: none;
+          }
+        }
+        /* Enhanced Mobile Responsiveness */
+        
+        /* Tablet and smaller desktop */
+        @media (max-width: 980px) {
+          .admin-content {
+            padding: 1.5rem !important;
+          }
+          .products-grid, .best-picks-grid {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+            gap: 1rem !important;
+          }
+          .orders-table-wrapper {
+            overflow-x: auto !important;
+          }
+          .orders-table-wrapper table {
+            min-width: 600px !important;
+          }
+        }
+        
+        /* Mobile tablets */
+        @media (max-width: 768px) {
+          .admin-content {
+            padding: 1rem !important;
+            margin-left: 0 !important;
+          }
+          .hamburger {
+            top: 0.75rem !important;
+            left: 0.75rem !important;
+            padding: 0.4rem !important;
+          }
+          .admin-form {
+            grid-template-columns: 1fr !important;
+            gap: 1rem !important;
+          }
+          .admin-page .section-header {
+            font-size: 1.3rem !important;
+            margin-bottom: 0.75rem !important;
+          }
+          .products-grid, .best-picks-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem !important;
+          }
+          .orders-table-wrapper {
+            margin: 0 -1rem !important;
+            padding: 0 1rem !important;
+          }
+          .orders-table-wrapper table th,
+          .orders-table-wrapper table td {
+            padding: 6px !important;
+            font-size: 0.85rem !important;
+          }
+        }
+        
+        /* Mobile phones */
+        @media (max-width: 600px) {
+          .admin-page {
+            padding: 0 !important;
+          }
+          .admin-content {
+            padding: 0.75rem !important;
+            margin-left: 0 !important;
+          }
+          .hamburger {
+            top: 0.5rem !important;
+            left: 0.5rem !important;
+            padding: 0.35rem !important;
+          }
+          .admin-form input,
+          .admin-form select,
+          .admin-form textarea {
+            padding: 0.6rem !important;
+            font-size: 0.9rem !important;
+          }
+          .admin-form button {
+            padding: 0.6rem 1rem !important;
+            font-size: 0.9rem !important;
+          }
+          .admin-page .section {
+            padding: 1rem !important;
+            margin-bottom: 1rem !important;
+          }
+          .products-grid, .best-picks-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.5rem !important;
+          }
+          .orders-table-wrapper {
+            margin: 0 -0.75rem !important;
+            padding: 0 0.75rem !important;
+          }
+          .orders-table-wrapper table {
+            min-width: 500px !important;
+          }
+          .orders-table-wrapper table th,
+          .orders-table-wrapper table td {
+            padding: 4px !important;
+            font-size: 0.8rem !important;
+          }
+          .admin-page .section-header {
+            font-size: 1.2rem !important;
+            margin-bottom: 0.5rem !important;
+          }
+          .product-list-item {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 0.75rem;
+          }
+          .product-list-item > div:last-child {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+          }
+        }
+        
+        /* Small mobile phones */
+        @media (max-width: 480px) {
+          .admin-content {
+            padding: 0.5rem !important;
+          }
+          .hamburger {
+            top: 0.25rem !important;
+            left: 0.25rem !important;
+            padding: 0.3rem !important;
+          }
+          .products-grid, .best-picks-grid {
+            gap: 0.4rem !important;
+          }
+          .admin-form input,
+          .admin-form select,
+          .admin-form textarea {
+            padding: 0.5rem !important;
+            font-size: 0.85rem !important;
+          }
+          .admin-form button {
+            padding: 0.5rem 0.8rem !important;
+            font-size: 0.85rem !important;
+          }
+          .admin-page .section {
+            padding: 0.75rem !important;
+          }
+          .orders-table-wrapper table {
+            min-width: 450px !important;
+          }
+          .admin-page .section-header {
+            font-size: 1.1rem !important;
+          }
+          .dashboard-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .dashboard-grid > div {
+            padding: 1rem !important;
+          }
+          .dashboard-grid h3 {
+            font-size: 0.9rem !important;
+          }
+          .dashboard-grid p {
+            font-size: 1.8rem !important;
+          }
+        }
+        
+        /* Extra small devices */
+        @media (max-width: 360px) {
+          .admin-content {
+            padding: 0.25rem !important;
+          }
+          .products-grid, .best-picks-grid {
+            gap: 0.3rem !important;
+          }
+          .admin-page .section {
+            padding: 0.5rem !important;
+            margin-bottom: 0.75rem !important;
+          }
+          .orders-table-wrapper table {
+            min-width: 400px !important;
+          }
+          .admin-page .section-header {
+            font-size: 1rem !important;
+          }
+          .dashboard-grid {
+            grid-template-columns: 1fr !important;
           }
         }
       `}</style>

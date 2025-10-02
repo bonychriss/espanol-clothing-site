@@ -211,7 +211,7 @@ export default function Home() {
       {/* Categories Grid */}
       <section aria-labelledby="shop-by-category" style={{ maxWidth: 1200, margin: '2rem auto', padding: '0 1rem' }}>
         <h2 id="shop-by-category" style={{ color: '#FFD700', fontSize: 24, fontWeight: 800, marginBottom: 16 }}>{t('shopByCategory')}</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+        <div className="categories-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
           {categories.map((c) => (
             <a key={c.key} href={c.href} style={{ textDecoration: 'none', color: 'inherit' }} aria-label={`Shop ${c.label}`}>
               <div style={{
@@ -241,7 +241,7 @@ export default function Home() {
           <div style={{ color: 'crimson', padding: '0.5rem 0' }}>{bpError}</div>
         )}
         {!bpLoading && !bpError && (
-          <div className="trending-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1.5rem' }}>
+          <div className="trending-list best-picks-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1.5rem' }}>
             {bestPicks.map((item, idx) => (
               <div
                 key={idx}
@@ -374,6 +374,265 @@ export default function Home() {
           &copy; {new Date().getFullYear()} {t('copyright')}
         </div>
       </footer>
+
+      {/* Enhanced Mobile Responsive CSS */}
+      <style>{`
+        /* Tablet and smaller desktop */
+        @media (max-width: 980px) {
+          .categories-grid {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+            gap: 1rem !important;
+          }
+          .best-picks-grid, .trending-list {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1rem !important;
+          }
+        }
+        
+        /* Mobile tablets (768px and below) */
+        @media (max-width: 768px) {
+          main {
+            padding: 0 !important;
+          }
+          
+          /* Language selector */
+          main > div:first-child > div {
+            padding: 0 1rem !important;
+            flex-direction: column !important;
+            gap: 8px !important;
+          }
+          
+          /* Hero section */
+          section[aria-label="Hero"] {
+            min-height: 60vh !important;
+            padding: 0 1rem !important;
+          }
+          
+          section[aria-label="Hero"] h1 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem) !important;
+          }
+          
+          section[aria-label="Hero"] p {
+            font-size: clamp(0.9rem, 2vw, 1.1rem) !important;
+          }
+          
+          section[aria-label="Hero"] > div:last-child > div:last-child {
+            flex-direction: column !important;
+            gap: 8px !important;
+          }
+          
+          section[aria-label="Hero"] > div:last-child > div:last-child a,
+          section[aria-label="Hero"] > div:last-child > div:last-child button {
+            width: 100% !important;
+            max-width: 200px !important;
+            text-align: center !important;
+          }
+          
+          /* Categories */
+          .categories-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem !important;
+          }
+          
+          /* Best picks */
+          .best-picks-grid, .trending-list {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem !important;
+          }
+          
+          /* Video section */
+          .floating-video-hero {
+            min-height: 50vh !important;
+            margin: 1.5rem 0 !important;
+          }
+          
+          /* Footer */
+          footer > div {
+            flex-direction: column !important;
+            gap: 1.5rem !important;
+            padding: 0 1rem !important;
+          }
+          
+          footer > div > div {
+            min-width: auto !important;
+            text-align: center !important;
+          }
+          
+          footer form {
+            flex-direction: column !important;
+            gap: 8px !important;
+          }
+          
+          /* Social float */
+          .social-float {
+            bottom: 15px !important;
+            right: 15px !important;
+          }
+          
+          .social-float a {
+            width: 50px !important;
+            height: 50px !important;
+            font-size: 24px !important;
+          }
+        }
+        
+        /* Mobile phones (600px and below) */
+        @media (max-width: 600px) {
+          /* Sections padding */
+          section[aria-labelledby] {
+            padding: 0 0.75rem !important;
+            margin: 1.5rem auto !important;
+          }
+          
+          /* Hero section */
+          section[aria-label="Hero"] {
+            min-height: 50vh !important;
+            padding: 0 0.75rem !important;
+          }
+          
+          /* Categories and best picks */
+          .categories-grid, .best-picks-grid, .trending-list {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.5rem !important;
+          }
+          
+          .trend-tile, .category-card {
+            min-height: 160px !important;
+          }
+          
+          .trend-tile img, .category-card img {
+            height: 140px !important;
+          }
+          
+          .trend-tile button {
+            padding: 0.4rem 0.8rem !important;
+            font-size: 0.85rem !important;
+          }
+          
+          /* Video section */
+          .floating-video-hero {
+            min-height: 40vh !important;
+            margin: 1rem 0 !important;
+          }
+          
+          .floating-video-hero > div:last-child > div {
+            padding: 0.5rem 0.75rem !important;
+            font-size: 0.9rem !important;
+          }
+          
+          /* Testimonials */
+          section[aria-labelledby="testimonials"] {
+            margin: 1.5rem auto !important;
+          }
+          
+          section[aria-labelledby="testimonials"] > div {
+            padding: 1rem !important;
+          }
+          
+          /* Section titles */
+          h2 {
+            font-size: 1.5rem !important;
+          }
+        }
+        
+        /* Small mobile phones (480px and below) */
+        @media (max-width: 480px) {
+          /* Further reduce spacing */
+          section[aria-labelledby] {
+            padding: 0 0.5rem !important;
+            margin: 1rem auto !important;
+          }
+          
+          section[aria-label="Hero"] {
+            padding: 0 0.5rem !important;
+            min-height: 45vh !important;
+          }
+          
+          .categories-grid, .best-picks-grid, .trending-list {
+            gap: 0.4rem !important;
+          }
+          
+          .trend-tile, .category-card {
+            min-height: 140px !important;
+          }
+          
+          .trend-tile img, .category-card img {
+            height: 120px !important;
+          }
+          
+          .trend-tile button {
+            padding: 0.3rem 0.6rem !important;
+            font-size: 0.8rem !important;
+          }
+          
+          /* Video section */
+          .floating-video-hero {
+            min-height: 35vh !important;
+          }
+          
+          /* Social float */
+          .social-float {
+            bottom: 10px !important;
+            right: 10px !important;
+          }
+          
+          .social-float a {
+            width: 45px !important;
+            height: 45px !important;
+            font-size: 20px !important;
+          }
+          
+          /* Footer */
+          footer {
+            padding: 1.5rem 0 1rem 0 !important;
+          }
+          
+          /* Section titles */
+          h2 {
+            font-size: 1.3rem !important;
+            margin-bottom: 12px !important;
+          }
+        }
+        
+        /* Extra small devices (360px and below) */
+        @media (max-width: 360px) {
+          section[aria-labelledby] {
+            padding: 0 0.25rem !important;
+          }
+          
+          section[aria-label="Hero"] {
+            padding: 0 0.25rem !important;
+          }
+          
+          .categories-grid, .best-picks-grid, .trending-list {
+            gap: 0.3rem !important;
+          }
+          
+          .trend-tile, .category-card {
+            min-height: 120px !important;
+          }
+          
+          .trend-tile img, .category-card img {
+            height: 100px !important;
+          }
+          
+          .trend-tile button {
+            padding: 0.25rem 0.5rem !important;
+            font-size: 0.75rem !important;
+          }
+          
+          /* Video section */
+          .floating-video-hero {
+            min-height: 30vh !important;
+          }
+          
+          /* Testimonials */
+          section[aria-labelledby="testimonials"] > div {
+            padding: 0.75rem !important;
+            font-size: 0.9rem !important;
+          }
+        }
+      `}</style>
     </main>
   );
 }

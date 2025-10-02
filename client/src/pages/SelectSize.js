@@ -90,10 +90,11 @@ export default function SelectSize() {
   React.useEffect(() => {
     async function fetchProducts() {
       try {
+        const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
         // Fetch from both endpoints simultaneously
         const [productsRes, bestPicksRes] = await Promise.all([
-          fetch('/api/products'),
-          fetch('/api/best-picks')
+          fetch(`${API_BASE}/api/products`),
+          fetch(`${API_BASE}/api/best-picks`)
         ]);
 
         const products = productsRes.ok ? await productsRes.json() : [];
@@ -221,7 +222,7 @@ export default function SelectSize() {
               {/* Removed 'Available Sizes' label as requested */}
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 {(fullProduct.variants || []).map(variant => {
-                  const isOutOfStock = variant.stock <= 0;
+                  const isProductOutOfStock = fullProduct.inStock === false;
                   return (
                   <button
                     key={variant.size}
@@ -232,16 +233,16 @@ export default function SelectSize() {
                       borderRadius: 8,
                       border: size === variant.size ? '2px solid #FFD700' : '1px solid #ddd',
                       background: size === variant.size ? '#FFF8DC' : '#fff',
-                      color: isOutOfStock ? '#aaa' : '#222',
+                      color: isProductOutOfStock ? '#aaa' : '#222',
                       fontWeight: 700,
-                      cursor: isLoggedIn && !isOutOfStock ? 'pointer' : 'not-allowed',
+                      cursor: isLoggedIn && !isProductOutOfStock ? 'pointer' : 'not-allowed',
                       boxShadow: size === variant.size ? '0 2px 8px #FFD70044' : 'none',
                       marginBottom: 4,
-                      opacity: isLoggedIn && !isOutOfStock ? 1 : 0.6,
-                      textDecoration: isOutOfStock ? 'line-through' : 'none',
+                      opacity: isLoggedIn && !isProductOutOfStock ? 1 : 0.6,
+                      textDecoration: isProductOutOfStock ? 'line-through' : 'none',
                     }}
-                    onClick={() => isLoggedIn && !isOutOfStock && setSize(variant.size)}
-                    disabled={!isLoggedIn || isOutOfStock}
+                    onClick={() => isLoggedIn && !isProductOutOfStock && setSize(variant.size)}
+                    disabled={!isLoggedIn || isProductOutOfStock}
                   >{variant.size}</button>
                 )})}
               </div>
@@ -280,7 +281,7 @@ export default function SelectSize() {
                 }
               }}
               min="1"
-              max={size ? fullProduct.variants?.find(v => v.size === size)?.stock : 1}
+              max="99"
               style={{
                 width: '70px',
                 padding: '0.6rem',
@@ -288,12 +289,12 @@ export default function SelectSize() {
                 border: '1px solid #ddd',
                 textAlign: 'center',
                 fontSize: '1rem',
-                opacity: isLoggedIn && (fullProduct.variants?.reduce((sum, v) => sum + v.stock, 0) > 0) ? 1 : 0.6,
+                opacity: isLoggedIn && fullProduct.inStock !== false ? 1 : 0.6,
               }}
-              disabled={!isLoggedIn || (fullProduct.variants?.reduce((sum, v) => sum + v.stock, 0) === 0)}
+              disabled={!isLoggedIn || fullProduct.inStock === false}
             />
           </div>
-          {(fullProduct.variants?.reduce((sum, v) => sum + v.stock, 0) === 0) ? (<div style={{ background: '#fbebeb', color: '#c00', border: '1px solid #f8d7da', borderRadius: 8, padding: '0.8rem 1.7rem', fontWeight: 700, minWidth: 180, fontSize: '1.08rem', marginTop: 10, textAlign: 'center' }}>Out of Stock</div>) : (
+          {(fullProduct.inStock === false) ? (<div style={{ background: '#fbebeb', color: '#c00', border: '1px solid #f8d7da', borderRadius: 8, padding: '0.8rem 1.7rem', fontWeight: 700, minWidth: 180, fontSize: '1.08rem', marginTop: 10, textAlign: 'center' }}>Out of Stock</div>) : (
             <button
               className="add-to-cart-btn"
               style={{ background: '#232F3E', color: '#fff', border: 'none', borderRadius: 8, padding: '0.8rem 1.7rem', fontWeight: 700, minWidth: 180, fontSize: '1.08rem', marginTop: 10, cursor: isLoggedIn && size ? 'pointer' : 'not-allowed', opacity: isLoggedIn && size ? 1 : 0.6 }}
@@ -337,8 +338,8 @@ export default function SelectSize() {
                     justifyContent: 'flex-start',
                     minHeight: 380,
                   }}>
-                    {!sp.inStock && !sp.isBestPick && (
-                      <div style={{
+                    {sp.inStock === false && (
+                      <div className="sold-out-badge" style={{
                         position: 'absolute',
                         top: '15px',
                         right: '-30px',
@@ -354,7 +355,7 @@ export default function SelectSize() {
                     )}
                     {/* Image */}
                     <div style={{ width: '100%', height: 220, marginBottom: '1rem', overflow: 'hidden', borderRadius: '0.75rem' }}>
-                      <img src={sp.image} alt={sp.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: !sp.inStock ? 'grayscale(0.5) brightness(0.85)' : 'none' }} />
+                      <img src={sp.image} alt={sp.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: sp.inStock === false ? 'grayscale(0.5) brightness(0.85)' : 'none' }} />
                     </div>
                     {/* Title */}
                     <div style={{ width: '100%', marginBottom: 6, fontSize: '1rem', fontWeight: 700, color: '#111', textAlign: 'center', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{sp.name}</div>
@@ -373,10 +374,10 @@ export default function SelectSize() {
                     <div style={{ width: '100%', marginTop: 8 }}>
                       <button
                         type="button"
-                        style={{ background: '#FFD700', color: '#222', border: 'none', borderRadius: 8, padding: '0.5rem 1.2rem', fontWeight: 700, width: '100%', maxWidth: 180, cursor: (!sp.inStock && !sp.isBestPick) ? 'not-allowed' : 'pointer', marginBottom: 6, opacity: (!sp.inStock && !sp.isBestPick) ? 0.6 : 1 }}
-                        onClick={() => { if (sp.inStock || sp.isBestPick) navigate('/select-size', { state: { product: sp } }) }}
-                        disabled={!sp.inStock && !sp.isBestPick}
-                      >{(!sp.inStock && !sp.isBestPick) ? 'Sold Out' : 'View'}</button>
+                        style={{ background: '#FFD700', color: '#222', border: 'none', borderRadius: 8, padding: '0.5rem 1.2rem', fontWeight: 700, width: '100%', maxWidth: 180, cursor: sp.inStock === false ? 'not-allowed' : 'pointer', marginBottom: 6, opacity: sp.inStock === false ? 0.6 : 1 }}
+                        onClick={() => { if (sp.inStock !== false) navigate('/select-size', { state: { product: sp } }) }}
+                        disabled={sp.inStock === false}
+                      >{sp.inStock === false ? 'Sold Out' : 'View'}</button>
                     </div>
                   </div>
                 );
@@ -398,6 +399,72 @@ export default function SelectSize() {
         .add-to-cart-btn:hover:not(:disabled) { background: #FFD700; color: #232F3E; }
         .related-products-grid { margin-top: 0; }
         .related-product-card:hover { box-shadow: 0 4px 16px #FFD70033; }
+        /* Mobile tablets (768px and below) */
+        @media (max-width: 768px) {
+          /* Significantly reduce SOLD OUT badge size for tablets */
+          .sold-out-badge {
+            top: 8px !important;
+            right: -15px !important;
+            padding: 2px 15px !important;
+            font-size: 8px !important;
+            font-weight: 600 !important;
+          }
+        }
+        
+        @media (max-width: 600px) {
+          .related-products-grid {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+            gap: 0.5rem !important;
+          }
+          .product-card {
+            min-height: 320px !important;
+            padding: 1rem !important;
+          }
+          .product-card img {
+            height: 140px !important;
+          }
+          .size-selectors {
+            flex-direction: column !important;
+            gap: 1rem !important;
+          }
+          .size-btn {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.9rem !important;
+          }
+          
+          /* Much smaller SOLD OUT badge for mobile phones */
+          .sold-out-badge {
+            top: 6px !important;
+            right: -12px !important;
+            padding: 1px 12px !important;
+            font-size: 7px !important;
+            font-weight: 600 !important;
+          }
+        }
+        
+        /* Small mobile phones (480px and below) */
+        @media (max-width: 480px) {
+          /* Ultra-compact SOLD OUT badge for small phones */
+          .sold-out-badge {
+            top: 5px !important;
+            right: -10px !important;
+            padding: 1px 10px !important;
+            font-size: 6px !important;
+            font-weight: 600 !important;
+          }
+        }
+        
+        /* Extra small devices (360px and below) */
+        @media (max-width: 360px) {
+          /* Minimal SOLD OUT badge for very small screens */
+          .sold-out-badge {
+            top: 4px !important;
+            right: -8px !important;
+            padding: 1px 8px !important;
+            font-size: 5px !important;
+            font-weight: 600 !important;
+          }
+        }
       `}</style>
     </div>
   );

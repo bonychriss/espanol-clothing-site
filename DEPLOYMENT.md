@@ -1,55 +1,68 @@
-# Render Deployment Instructions
+# 🚀 Deploying Sabor Español to Render
 
-## 🚀 Separate Deployment Configuration
+## Prerequisites
+- GitHub repository with your code
+- MongoDB Atlas account (for production database)
+- Render account (free tier available)
 
-### Backend (Web Service)
-**Directory**: `server`
-- **Build Command**: `npm install`
-- **Start Command**: `npm start`
-- **Environment Variables**:
-  ```
-  NODE_ENV=production
-  MONGO_URI=your_mongodb_connection_string
-  JWT_SECRET=your_jwt_secret_key
-  PORT=10000
-  ```
+## � Quick Deployment Steps
 
-### Frontend (Static Site)
-**Directory**: `client`
-- **Build Command**: `npm run build`
-- **Publish Directory**: `build`
-- **Environment Variables**:
-  ```
-  **Frontend**:
+### 1. **Deploy Backend API**
+1. Go to [Render Dashboard](https://dashboard.render.com)
+2. Click **"New +"** → **"Web Service"**
+3. Connect your GitHub repository
+4. Configure service:
+   - **Name**: `sabor-espanol-api`
+   - **Runtime**: `Node`
+   - **Root Directory**: `server`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Plan**: `Free`
+
+**Environment Variables:**
 ```
-REACT_APP_API_URL=https://sabor-espanol-project-backend.onrender.com
+MONGO_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_super_secret_jwt_key_here
+NODE_ENV=production
 ```
-  ```
 
-## 📋 Deployment Steps
-
-### 1. Deploy Backend First
-1. Create a new **Web Service** on Render
-2. Connect your GitHub repository
-3. Set **Root Directory** to `server`
-4. Configure environment variables
-5. Deploy and note the backend URL
-
-### 2. Deploy Frontend Second
-1. Create a new **Static Site** on Render
+### 2. **Deploy Frontend**
+1. Create another service: **"New +"** → **"Static Site"**
 2. Connect the same GitHub repository
-3. Set **Root Directory** to `client`
-4. Update `client/.env.production` with your backend URL
-5. Configure environment variables
-6. Deploy
+3. Configure:
+   - **Name**: `sabor-espanol-frontend`
+   - **Root Directory**: `client`
+   - **Build Command**: `npm run build`
+   - **Publish Directory**: `build`
+   - **Plan**: `Free`
 
-### 3. Update CORS Settings
-✅ Backend URL configured: `https://sabor-espanol-project-backend.onrender.com`
-✅ Frontend URL configured: `https://sabor-espanol-project-frontend.onrender.com`
-✅ CORS settings updated in `server/index.js`
+**Frontend Environment Variable:**
+```
+REACT_APP_API_BASE_URL=https://sabor-espanol-api.onrender.com
+```
 
-## 🔧 Post-Deployment
-- Test all API endpoints
-- Verify frontend can connect to backend
-- Update any hardcoded URLs
-- Set up custom domains if needed
+### 3. **MongoDB Atlas Setup**
+1. Create cluster at [MongoDB Atlas](https://cloud.mongodb.com)
+2. Create database user
+3. Whitelist IP addresses (0.0.0.0/0 for Render)
+4. Get connection string
+5. Add to Render backend environment variables
+
+## 🔧 Build Configuration
+- ✅ Health check endpoint: `/api/health`
+- ✅ CORS configured for cross-origin requests
+- ✅ Production-ready build scripts
+- ✅ Environment variable support
+
+## 📱 Post-Deployment URLs
+- **Backend API**: `https://sabor-espanol-api.onrender.com`
+- **Frontend**: `https://sabor-espanol-frontend.onrender.com`
+- **Health Check**: `https://sabor-espanol-api.onrender.com/api/health`
+
+## � Important Notes
+- **Free Tier**: Services sleep after 30 minutes of inactivity
+- **Cold Start**: First request may take 30+ seconds
+- **Custom Domain**: Available in Render settings
+
+---
+**Ready to deploy?** Push your code to GitHub and follow the steps above! 🚀
