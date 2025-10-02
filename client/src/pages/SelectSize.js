@@ -126,7 +126,17 @@ export default function SelectSize() {
 
   const handleAddToCart = () => {
     if (!isLoggedIn) {
-      navigate('/login'); // or '/register' if you prefer
+      // Show user-friendly alert and redirect to login page
+      const userChoice = window.confirm(
+        'You need to be logged in to add items to your cart.\n\n' +
+        'Click "OK" to log in or "Cancel" to create a new account.'
+      );
+      
+      if (userChoice) {
+        navigate('/login');
+      } else {
+        navigate('/register');
+      }
       return;
     }
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');

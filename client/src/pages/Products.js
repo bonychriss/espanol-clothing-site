@@ -95,7 +95,17 @@ function Products() {
   // Add to cart handler now navigates to SelectSize page
   const handleAddToCart = (product, id) => {
     if (!isAuthenticated) {
-      navigate('/register'); // or '/login' if you prefer
+      // Show user-friendly alert and redirect to login page
+      const userChoice = window.confirm(
+        'You need to be logged in to add items to your cart.\n\n' +
+        'Click "OK" to log in or "Cancel" to create a new account.'
+      );
+      
+      if (userChoice) {
+        navigate('/login');
+      } else {
+        navigate('/register');
+      }
       return;
     }
     navigate('/select-size', { state: { product } });

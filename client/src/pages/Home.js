@@ -5,6 +5,9 @@ import { useTranslation } from 'react-i18next';
 export default function Home() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  
+  // Check if user is authenticated
+  const isAuthenticated = !!localStorage.getItem('token');
 
   // Testimonials data (could also be translated)
   const testimonials = [
@@ -266,7 +269,23 @@ export default function Home() {
                     position: 'absolute', right: 12, bottom: 12, background: '#FFD700', color: '#222', fontWeight: 700,
                     border: 'none', borderRadius: 8, padding: '0.5rem 1.1rem', cursor: 'pointer', zIndex: 2
                   }}
-                  onClick={() => navigate('/select-size', { state: { product: item } })}
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      // Show user-friendly alert and redirect to login page
+                      const userChoice = window.confirm(
+                        'You need to be logged in to add items to your cart.\n\n' +
+                        'Click "OK" to log in or "Cancel" to create a new account.'
+                      );
+                      
+                      if (userChoice) {
+                        navigate('/login');
+                      } else {
+                        navigate('/register');
+                      }
+                      return;
+                    }
+                    navigate('/select-size', { state: { product: item } });
+                  }}
                 >
                   {t('selectSize')}
                 </button>
