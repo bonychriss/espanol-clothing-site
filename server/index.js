@@ -115,6 +115,19 @@ app.get('/api/debug', (req, res) => {
   });
 });
 
+// CORS test endpoint
+app.get('/api/cors-test', (req, res) => {
+  res.status(200).json({
+    message: 'CORS test successful!',
+    timestamp: new Date().toISOString(),
+    headers: {
+      'access-control-allow-origin': res.get('Access-Control-Allow-Origin'),
+      'access-control-allow-credentials': res.get('Access-Control-Allow-Credentials'),
+    },
+    requestOrigin: req.get('Origin')
+  });
+});
+
 // --- Admin User Seeding ---
 // This function runs on server startup to ensure the admin user exists.
 const seedAdminUser = async () => {
