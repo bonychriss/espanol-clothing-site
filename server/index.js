@@ -87,6 +87,18 @@ app.get('/api/health', (req, res) => {
   }
 });
 
+// Debug endpoint to check what requests we're getting
+app.get('/api/debug', (req, res) => {
+  res.status(200).json({
+    message: 'Backend is working!',
+    timestamp: new Date().toISOString(),
+    origin: req.get('Origin'),
+    userAgent: req.get('User-Agent'),
+    url: req.url,
+    method: req.method
+  });
+});
+
 // --- Admin User Seeding ---
 // This function runs on server startup to ensure the admin user exists.
 const seedAdminUser = async () => {
