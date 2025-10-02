@@ -14,7 +14,7 @@ const app = express();
 const corsOptions = {
   origin: [
     'http://localhost:3000', // Local development
-    'https://sabor-espanol-project-frontend.onrender.com', // Production frontend URL (update with your actual frontend URL)
+    'https://sabor-espanol-project-frontend.onrender.com', // Production frontend URL
     // Add your custom domain here if you have one
   ],
   credentials: true,

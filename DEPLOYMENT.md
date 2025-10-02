@@ -20,7 +20,10 @@
 - **Publish Directory**: `build`
 - **Environment Variables**:
   ```
-  REACT_APP_API_URL=https://sabor-espanol-project-backend.onrender.com
+  **Frontend**:
+```
+REACT_APP_API_URL=https://sabor-espanol-project-backend.onrender.com
+```
   ```
 
 ## 📋 Deployment Steps
@@ -42,7 +45,8 @@
 
 ### 3. Update CORS Settings
 ✅ Backend URL configured: `https://sabor-espanol-project-backend.onrender.com`
-⏳ After deploying frontend, update the CORS origin in `server/index.js` with your actual frontend URL.
+✅ Frontend URL configured: `https://sabor-espanol-project-frontend.onrender.com`
+✅ CORS settings updated in `server/index.js`
 
 ## 🔧 Post-Deployment
 - Test all API endpoints
