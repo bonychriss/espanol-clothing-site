@@ -1,7 +1,7 @@
 services:
   # Backend API Service
   - type: web
-    name: sabor-espanol-api
+    name: espanol-clothing-site
     runtime: node
     plan: free
     buildCommand: cd server && npm install
@@ -19,9 +19,12 @@ services:
     
   # Frontend Static Site
   - type: static
-    name: sabor-espanol-frontend
+    name: espanol-clothing-site-frontend
     buildCommand: cd client && npm install && npm run build
     staticPublishPath: ./client/build
+    envVars:
+      - key: REACT_APP_API_BASE_URL
+        value: https://espanol-clothing-site.onrender.com
     pullRequestPreviewsEnabled: false
     headers:
       - path: /*
