@@ -1,8 +1,25 @@
 {
+  "name": "clothing-store-fullstack",
+  "version": "1.0.0",
+  "description": "Full-stack clothing store with React frontend and Express backend",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "cd client && npm install && npm run build",
+    "start": "cd server && npm start",
+    "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm start\"",
+    "install-deps": "cd server && npm install && cd ../client && npm install"
+  },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "express-validator": "^7.2.1",
     "multer": "^2.0.2",
     "react-router-dom": "^6.22.3"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }
