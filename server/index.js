@@ -8,6 +8,11 @@ const User = require('./models/User');
 // Load environment variables from .env file
 dotenv.config();
 
+// Log environment info
+console.log('Environment:', process.env.NODE_ENV || 'development');
+console.log('Port:', process.env.PORT || 10000);
+console.log('MongoDB URI exists:', !!process.env.MONGO_URI);
+
 const app = express();
 
 // CORS configuration for separate frontend deployment
@@ -28,18 +33,48 @@ app.use(express.json({ limit: '10mb' }));
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-}).catch(err => {
+})
+.then(() => {
+  console.log('MongoDB connected successfully');
+})
+.catch(err => {
   console.error('Initial MongoDB connection error:', err.message);
   console.error('Please ensure your IP is whitelisted in MongoDB Atlas and your MONGO_URI is correct in the .env file.');
   process.exit(1); // Exit the process with a failure code
 });
 
+// MongoDB connection event handlers
+mongoose.connection.on('connected', () => {
+  console.log('Mongoose connected to MongoDB');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('Mongoose connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose disconnected');
+});
+
 // Basic route
 app.get('/', (req, res) => {
-  res.send('Clothing Store API');
+  res.json({ 
+    message: 'Clothing Store API',
+    status: 'running',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Health check endpoint
+app.get('/health', (req, res) => {
+  const healthCheck = {
+    uptime: process.uptime(),
+    message: 'OK',
+    timestamp: new Date().toISOString(),
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  };
+  res.status(200).json(healthCheck);
+});
 app.get('/api/health', (req, res) => {
   // Check database connection state
   const isConnected = mongoose.connection.readyState === 1;
@@ -89,7 +124,37 @@ const path = require('path');
 // Serve uploaded images (you may want to use cloud storage like Cloudinary in production)
 app.use('/images', express.static(path.join(__dirname, 'uploads')));
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const PORT = process.env.PORT || 10000;
+const HOST = process.env.HOST || '0.0.0.0';
+
+const server = app.listen(PORT, HOST, () => {
+  console.log(`Server running on ${HOST}:${PORT}`);
+});
+
+// Set timeouts to prevent 502 errors on Render
+server.keepAliveTimeout = 120000; // 120 seconds
+server.headersTimeout = 120000; // 120 seconds
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err, promise) => {
+  console.error('Unhandled Promise Rejection:', err.message);
+  // Close server & exit process
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err.message);
+  process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received. Shutting down gracefully...');
+  server.close(() => {
+    mongoose.connection.close();
+    process.exit(0);
+  });
 });
