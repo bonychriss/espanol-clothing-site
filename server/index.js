@@ -17,11 +17,7 @@ const app = express();
 
 // CORS configuration for separate frontend deployment
 const corsOptions = {
-  origin: [
-    'http://localhost:3000', // Local development
-    'https://espanol-clothing-site-1.onrender.com', // Production frontend URL
-    'https://sabor-espanol-project-frontend.onrender.com', // Backup old URL
-  ],
+  origin: true, // Temporarily allow all origins for debugging
   credentials: true,
   optionsSuccessStatus: 200
 };
